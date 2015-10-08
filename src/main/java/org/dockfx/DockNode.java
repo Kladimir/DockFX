@@ -20,6 +20,12 @@
 
 package org.dockfx;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.dockfx.events.DockNodeEvent;
+import org.dockfx.events.DockNodeEventListenerInterface;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -47,7 +53,7 @@ import javafx.stage.Window;
  * Base class for a dock node that provides the layout of the content along with a title bar and a
  * styled border. The dock node can be detached and floated or closed and removed from the layout.
  * Dragging behavior is implemented through the title bar.
- * 
+ *
  * @since DockFX 0.1
  */
 public class DockNode extends VBox implements EventHandler<MouseEvent> {
@@ -92,8 +98,14 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   private static final PseudoClass MAXIMIZED_PSEUDO_CLASS = PseudoClass.getPseudoClass("maximized");
 
   /**
+   * Contains listeners for DockNode events
+   */
+  private Set<DockNodeEventListenerInterface> listeners =
+      new HashSet<DockNodeEventListenerInterface>();
+
+  /**
    * Boolean property maintaining whether this node is currently maximized.
-   * 
+   *
    * @defaultValue false
    */
   private BooleanProperty maximizedProperty = new SimpleBooleanProperty(false) {
@@ -107,8 +119,8 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
       stage.setMaximized(get());
 
-      // TODO: This is a work around to fill the screen bounds and not overlap the task bar when 
-      // the window is undecorated as in Visual Studio. A similar work around needs applied for 
+      // TODO: This is a work around to fill the screen bounds and not overlap the task bar when
+      // the window is undecorated as in Visual Studio. A similar work around needs applied for
       // JFrame in Swing. http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4737788
       // Bug report filed:
       // https://bugs.openjdk.java.net/browse/JDK-8133330
@@ -134,7 +146,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Creates a default DockNode with a default title bar and layout.
-   * 
+   *
    * @param contents The contents of the dock node which may be a tree or another scene graph node.
    * @param title The caption title of this dock node which maintains bidirectional state with the
    *        title bar and stage.
@@ -156,7 +168,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Creates a default DockNode with a default title bar and layout.
-   * 
+   *
    * @param contents The contents of the dock node which may be a tree or another scene graph node.
    * @param title The caption title of this dock node which maintains bidirectional state with the
    *        title bar and stage.
@@ -167,7 +179,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Creates a default DockNode with a default title bar and layout.
-   * 
+   *
    * @param contents The contents of the dock node which may be a tree or another scene graph node.
    */
   public DockNode(Node contents) {
@@ -175,9 +187,87 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   }
 
   /**
+   * Adds new event lister for DockNode events.
+   *
+   * @param eventListener Listener to add.
+   */
+  public void addEventListener(DockNodeEventListenerInterface eventListener) {
+    listeners.add(eventListener);
+  }
+
+  /**
+   * Removes event listener from DockNode eventListeners.
+   *
+   * @param eventListener Listener to remove.
+   */
+  public void removeEventListener(DockNodeEventListenerInterface eventListener) {
+    listeners.remove(eventListener);
+  }
+
+  /**
+   * Fires DockNode close event.
+   */
+  private void fireCloseEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeClosed(e);
+    }
+  }
+
+  /**
+   * Fires DockNode maximize event
+   */
+  private void fireMaximizeEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeMaximized(e);
+    }
+  }
+
+  /**
+   * Fires DockNode windowed event
+   */
+  private void fireWindowEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeWindowed(e);
+    }
+  }
+
+  /**
+   * Fires DockNode minimize event
+   */
+  private void fireMinimizeEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeMinimized(e);
+    }
+  }
+
+  /**
+   * Fires DockNode dock event
+   */
+  private void fireDockEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeDocked(e);
+    }
+  }
+
+  /**
+   * Fires DockNode float event
+   */
+  private void fireFloatEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeFloated(e);
+    }
+  }
+
+  /**
    * The stage style that will be used when the dock node is floating. This must be set prior to
    * setting the dock node to floating.
-   * 
+   *
    * @param stageStyle The stage style that will be used when the node is floating.
    */
   public void setStageStyle(StageStyle stageStyle) {
@@ -186,7 +276,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Changes the contents of the dock node.
-   * 
+   *
    * @param contents The new contents of this dock node.
    */
   public void setContents(Node contents) {
@@ -197,7 +287,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   /**
    * Changes the title bar in the layout of this dock node. This can be used to remove the dock
    * title bar from the dock node by passing null.
-   * 
+   *
    * @param dockTitleBar null The new title bar of this dock node, can be set null indicating no
    *        title bar is used.
    */
@@ -208,8 +298,10 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
       } else {
         this.getChildren().add(0, dockTitleBar);
       }
+      setFloatable(true);
     } else {
       this.getChildren().remove(this.dockTitleBar);
+      setFloatable(false);
     }
 
     this.dockTitleBar = dockTitleBar;
@@ -217,16 +309,21 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Whether the node is currently maximized.
-   * 
+   *
    * @param maximized Whether the node is currently maximized.
    */
   public final void setMaximized(boolean maximized) {
     maximizedProperty.set(maximized);
+    if (maximized) {
+      fireMaximizeEvent();
+    } else {
+      fireWindowEvent();
+    }
   }
 
   /**
    * Whether the node is currently floating.
-   * 
+   *
    * @param floating Whether the node is currently floating.
    * @param translation null The offset of the node after being set floating. Used for aligning it
    *        with its layout bounds inside the dock pane when it becomes detached. Can be null
@@ -318,8 +415,9 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
       // without this it subtracts the native border sizes from the scene
       // size
       stage.sizeToScene();
-
       stage.show();
+
+      fireFloatEvent();
     } else if (!floating && this.isFloating()) {
       this.floatingProperty.set(floating);
 
@@ -333,7 +431,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Whether the node is currently floating.
-   * 
+   *
    * @param floating Whether the node is currently floating.
    */
   public void setFloating(boolean floating) {
@@ -343,7 +441,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   /**
    * The dock pane that was last associated with this dock node. Either the dock pane that it is
    * currently docked to or the one it was detached from. Can be null if the node was never docked.
-   * 
+   *
    * @return The dock pane that was last associated with this dock node.
    */
   public final DockPane getDockPane() {
@@ -352,7 +450,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * The dock title bar associated with this dock node.
-   * 
+   *
    * @return The dock title bar associated with this node.
    */
   public final DockTitleBar getDockTitleBar() {
@@ -362,7 +460,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   /**
    * The stage associated with this dock node. Can be null if the dock node was never set to
    * floating.
-   * 
+   *
    * @return The stage associated with this node.
    */
   public final Stage getStage() {
@@ -372,7 +470,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   /**
    * The border pane used to parent this dock node when floating. Can be null if the dock node was
    * never set to floating.
-   * 
+   *
    * @return The stage associated with this node.
    */
   public final BorderPane getBorderPane() {
@@ -381,7 +479,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * The contents managed by this dock node.
-   * 
+   *
    * @return The contents managed by this dock node.
    */
   public final Node getContents() {
@@ -391,7 +489,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   /**
    * Object property maintaining bidirectional state of the caption graphic for this node with the
    * dock title bar or stage.
-   * 
+   *
    * @defaultValue null
    */
   public final ObjectProperty<Node> graphicProperty() {
@@ -416,7 +514,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   /**
    * Boolean property maintaining bidirectional state of the caption title for this node with the
    * dock title bar or stage.
-   * 
+   *
    * @defaultValue "Dock"
    */
   public final StringProperty titleProperty() {
@@ -442,7 +540,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
    * Boolean property maintaining whether this node is currently using a custom title bar. This can
    * be used to force the default title bar to show when the dock node is set to floating instead of
    * using native window borders.
-   * 
+   *
    * @defaultValue true
    */
   public final BooleanProperty customTitleBarProperty() {
@@ -470,7 +568,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Boolean property maintaining whether this node is currently floating.
-   * 
+   *
    * @defaultValue false
    */
   public final BooleanProperty floatingProperty() {
@@ -498,7 +596,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Boolean property maintaining whether this node is currently floatable.
-   * 
+   *
    * @defaultValue true
    */
   public final BooleanProperty floatableProperty() {
@@ -525,7 +623,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Boolean property maintaining whether this node is currently closable.
-   * 
+   *
    * @defaultValue true
    */
   public final BooleanProperty closableProperty() {
@@ -549,7 +647,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Boolean property maintaining whether this node is currently resizable.
-   * 
+   *
    * @defaultValue true
    */
   public final BooleanProperty resizableProperty() {
@@ -574,7 +672,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   /**
    * Boolean property maintaining whether this node is currently docked. This is used by the dock
    * pane to inform the dock node whether it is currently docked.
-   * 
+   *
    * @defaultValue false
    */
   public final BooleanProperty dockedProperty() {
@@ -618,7 +716,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Dock this node into a dock pane.
-   * 
+   *
    * @param dockPane The dock pane to dock this node into.
    * @param dockPos The docking position relative to the sibling of the dock pane.
    * @param sibling The sibling node to dock this node relative to.
@@ -630,7 +728,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Dock this node into a dock pane.
-   * 
+   *
    * @param dockPane The dock pane to dock this node into.
    * @param dockPos The docking position relative to the sibling of the dock pane.
    */
@@ -645,6 +743,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
     this.dockPane = dockPane;
     this.dockedProperty.set(true);
+    fireDockEvent();
   }
 
   /**
@@ -667,6 +766,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     } else if (isDocked()) {
       undock();
     }
+    fireCloseEvent();
   }
 
   /**
@@ -680,7 +780,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
   /**
    * Gets whether the mouse is currently in this dock node's resize zone.
-   * 
+   *
    * @return Whether the mouse is currently in this dock node's resize zone.
    */
   public boolean isMouseResizeZone() {

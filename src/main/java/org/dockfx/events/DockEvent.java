@@ -18,7 +18,7 @@
  *          program. If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package org.dockfx;
+package org.dockfx.events;
 
 import com.sun.javafx.scene.input.InputEventUtils;
 
@@ -36,7 +36,7 @@ import javafx.scene.input.PickResult;
  * which the event will travel when posted. The event type provides additional classification to
  * events of the same {@code DockEvent} class. Like a {@link MouseEvent} the event will be
  * associated with an x and y coordinate local to the node as well as to the screen.
- * 
+ *
  * @since DockFX 0.1
  */
 public class DockEvent extends Event {
@@ -89,7 +89,7 @@ public class DockEvent extends Event {
 
   /**
    * Horizontal position of the event relative to the origin of the DockEvent's source.
-   * 
+   *
    * @return horizontal position of the event relative to the origin of the DockEvent's source.
    */
   public final double getX() {
@@ -103,7 +103,7 @@ public class DockEvent extends Event {
 
   /**
    * Vertical position of the event relative to the origin of the DockEvent's source.
-   * 
+   *
    * @return vertical position of the event relative to the origin of the DockEvent's source.
    */
   public final double getY() {
@@ -131,7 +131,7 @@ public class DockEvent extends Event {
 
   /**
    * Returns absolute horizontal position of the event.
-   * 
+   *
    * @return absolute horizontal position of the event
    */
   public final double getScreenX() {
@@ -145,7 +145,7 @@ public class DockEvent extends Event {
 
   /**
    * Returns absolute vertical position of the event.
-   * 
+   *
    * @return absolute vertical position of the event
    */
   public final double getScreenY() {
@@ -164,7 +164,7 @@ public class DockEvent extends Event {
    * contains the DockEvent's source. If the node is not in a {@code Scene}, then the value is
    * relative to the boundsInParent of the root-most parent of the DockEvent's node. Note that in 3D
    * scene, this represents the flat coordinates after applying the projection transformations.
-   * 
+   *
    * @return horizontal position of the event relative to the origin of the {@code Scene} that
    *         contains the DockEvent's source
    */
@@ -184,7 +184,7 @@ public class DockEvent extends Event {
    * contains the DockEvent's source. If the node is not in a {@code Scene}, then the value is
    * relative to the boundsInParent of the root-most parent of the DockEvent's node. Note that in 3D
    * scene, this represents the flat coordinates after applying the projection transformations.
-   * 
+   *
    * @return vertical position of the event relative to the origin of the {@code Scene} that
    *         contains the DockEvent's source
    */
@@ -200,7 +200,7 @@ public class DockEvent extends Event {
 
   /**
    * Returns information about the pick.
-   * 
+   *
    * @return new PickResult object that contains information about the pick
    */
   public final PickResult getPickResult() {
@@ -215,7 +215,7 @@ public class DockEvent extends Event {
 
   /**
    * Returns the contents of the dock event, similar to the dragboard.
-   * 
+   *
    * @return Node that is currently being dragged during this event
    */
   public final Node getContents() {
@@ -224,7 +224,7 @@ public class DockEvent extends Event {
 
   /**
    * Constructs new DockEvent event..
-   * 
+   *
    * @param eventType The type of the event.
    * @param x The x with respect to the source. Should be in scene coordinates if source == null or
    *        source is not a Node.
@@ -242,7 +242,7 @@ public class DockEvent extends Event {
 
   /**
    * Constructs new DockEvent event..
-   * 
+   *
    * @param source the source of the event. Can be null.
    * @param target the target of the event. Can be null.
    * @param eventType The type of the event.
@@ -262,7 +262,7 @@ public class DockEvent extends Event {
 
   /**
    * Constructs new DockEvent event..
-   * 
+   *
    * @param source the source of the event. Can be null.
    * @param target the target of the event. Can be null.
    * @param eventType The type of the event.
