@@ -158,6 +158,10 @@
   -fx-graphic: url(restore.png);
 }
 
+.dock-minimize-button {
+  -fx-graphic: url(minimize.png);
+}
+
 .dock-node:floating .dock-state-button {
   -fx-graphic: url(maximize.png);
 }

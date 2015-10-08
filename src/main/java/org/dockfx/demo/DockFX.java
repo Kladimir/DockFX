@@ -29,9 +29,12 @@ import java.util.Random;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
+import org.dockfx.taskBar.TaskBar;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -40,6 +43,10 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 
@@ -123,6 +130,11 @@ public class DockFX extends Application {
     DockPane.initializeDefaultUserAgentStylesheet();
 
     // TODO: after this feel free to apply your own global stylesheet using the StyleManager class
+
+    TaskBar taskBar = new TaskBar();
+    dockPane.setAlignment(Pos.BOTTOM_CENTER);
+    dockPane.getChildren().add(taskBar);
+    taskBar.addTaskBarItemForNode(treeDock);
   }
 
   private TreeView<String> generateRandomTree() {
