@@ -32,9 +32,13 @@ import org.dockfx.DockPos;
 import org.dockfx.NodeManager;
 import org.dockfx.events.DockNodeEvent;
 import org.dockfx.events.DockNodeEventListener;
+import org.dockfx.taskBar.TaskBar;
+
+import com.sun.javafx.tk.Toolkit.Task;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -45,7 +49,11 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 
@@ -111,7 +119,7 @@ public class DockFX extends Application {
     tabsDock.dock(dockPane, DockPos.TOP);
     DockNode tableDock = nodeManager.getDockNode(vBox);
     // let's disable our table from being undocked
-    tableDock.setDockTitleBar(null);
+    //tableDock.setDockTitleBar(null);
     tableDock.setPrefSize(300, 500);
     tableDock.dock(dockPane, DockPos.BOTTOM);
 
@@ -151,6 +159,10 @@ public class DockFX extends Application {
     DockPane.initializeDefaultUserAgentStylesheet();
 
     // TODO: after this feel free to apply your own global stylesheet using the StyleManager class
+
+//    TaskBar taskBar = new TaskBar();
+//    dockPane.setAlignment(Pos.BOTTOM_CENTER);
+//    dockPane.getChildren().add(taskBar);
   }
 
   private TreeView<String> generateRandomTree() {

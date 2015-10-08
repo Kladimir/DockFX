@@ -28,9 +28,13 @@ import java.util.Set;
 import org.dockfx.events.DockNodeEvent;
 import org.dockfx.events.DockNodeEventListener;
 import org.dockfx.events.DockNodeEventListenerInterface;
+import org.dockfx.taskBar.TaskBar;
+
+import com.sun.javafx.tk.Toolkit.Task;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -65,6 +69,8 @@ public class NodeManager {
    */
   private DockPane dockPane;
 
+  private TaskBar taskBar;
+
   /**
    * Creates dock manager. Applies key listener for cascading/tiling shortcuts. Scene that DockPane
    * will be added to is required for listening to key events.
@@ -76,6 +82,10 @@ public class NodeManager {
   public NodeManager(DockPane dockPane, Scene scene) {
     this.dockPane = dockPane;
     scene.setOnKeyReleased((e) -> handleKeyReleased(e));
+
+    //taskBar = new TaskBar();
+    //dockPane.setAlignment(Pos.BOTTOM_CENTER);
+    //dockPane.getChildren().add(taskBar);
   }
 
   /**
