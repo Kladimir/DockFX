@@ -244,6 +244,13 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
   }
 
+  private void fireRestoreEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeRestored(e);
+    }
+  }
+
   /**
    * Fires DockNode dock event
    */
@@ -313,11 +320,17 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
    * @param maximized Whether the node is currently maximized.
    */
   public final void setMaximized(boolean maximized) {
-    maximizedProperty.set(maximized);
-    if (maximized) {
+
+    if (isMaximizable()) {
+      System.out.println("is maximizable");
+    }
+
+    if (isMaximizable() && !isMaximized() && maximized) {
       fireMaximizeEvent();
-    } else {
-      fireWindowEvent();
+      maximizedProperty.set(true);
+    } else if (!maximized && isMaximized()) {
+      fireRestoreEvent();
+      maximizedProperty.set(false);
     }
   }
 
@@ -619,6 +632,127 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
       this.setFloating(false);
     }
     this.floatableProperty.set(floatable);
+  }
+
+  /**
+   * Boolean property maintaining whether this node is minimizable.
+   *
+   * @defaultValue true
+   */
+  public final BooleanProperty minimizableProperty() {
+    return minimizableProperty;
+  }
+
+  private BooleanProperty minimizableProperty = new SimpleBooleanProperty(true) {
+    @Override
+    public String getName() {
+      return "minimizable";
+    }
+  };
+
+  public final boolean isMinimizable() {
+    return minimizableProperty.get();
+  }
+
+  public final void setMinimizable(boolean minimizable) {
+    if (minimizable && !this.isMinimizable()) {
+      dockTitleBar.getChildren().add(DockTitleBar.BUTTON_POSITION_MINIMIZE,
+          dockTitleBar.getMinimizeButton());
+    } else if (!minimizable && this.isMinimizable()) {
+      dockTitleBar.getChildren().remove(dockTitleBar.getMinimizeButton());
+    }
+    this.minimizableProperty.set(minimizable);
+  }
+
+  /**
+   * Boolean property maintaining whether this node is maximizable.
+   *
+   * @defaultValue true
+   */
+  public final BooleanProperty maximizableProperty() {
+    return maximizableProperty;
+  }
+
+  private BooleanProperty maximizableProperty = new SimpleBooleanProperty(true) {
+    @Override
+    public String getName() {
+      return "maximizable";
+    }
+  };
+
+  public final boolean isMaximizable() {
+    return maximizableProperty.get();
+  }
+
+  public final void setMaximizable(boolean maximizable) {
+    if (maximizable && !this.isMaximizable()) {
+      dockTitleBar.getChildren().add(DockTitleBar.BUTTON_POSITION_STATE,
+          dockTitleBar.getStateButton());
+    } else if (!maximizable && this.isMaximizable()) {
+      dockTitleBar.getChildren().remove(dockTitleBar.getStateButton());
+    }
+    this.maximizableProperty.set(maximizable);
+  }
+
+  /**
+   * Boolean property maintaining whether this node is closeable.
+   *
+   * @defaultValue true
+   */
+  public final BooleanProperty closeableProperty() {
+    return closeableProperty;
+  }
+
+  private BooleanProperty closeableProperty = new SimpleBooleanProperty(true) {
+    @Override
+    public String getName() {
+      return "closeable";
+    }
+  };
+
+  public final boolean isCloseable() {
+    return closeableProperty.get();
+  }
+
+  public final void setCloseable(boolean closeable) {
+    if (closeable && !this.isCloseable()) {
+      dockTitleBar.getChildren().add(DockTitleBar.BUTTON_POSITION_CLOSE,
+          dockTitleBar.getCloseButton());
+    } else if (!closeable && this.isCloseable()) {
+      dockTitleBar.getChildren().remove(dockTitleBar.getCloseButton());
+    }
+  }
+
+  /**
+   * Boolean property maintaining whether this node is currently minimized.
+   *
+   * @defaultValue false
+   */
+  public final BooleanProperty minimizedProperty() {
+    return minimizedProperty;
+  }
+
+  private BooleanProperty minimizedProperty = new SimpleBooleanProperty(false) {
+    @Override
+    public String getName() {
+      return "minimized";
+    };
+  };
+
+  public final boolean isMinimized() {
+    return minimizedProperty.get();
+  }
+
+  public final void setMinimized(boolean minimized) {
+    if (!minimized && isMinimized()) {
+      setVisible(true);
+      fireRestoreEvent();
+    } else if (minimized && !isMinimized()) {
+      setFloating(true);
+      setVisible(false);
+      fireMinimizeEvent();
+    }
+    this.minimizedProperty.set(minimized);
   }
 
   /**

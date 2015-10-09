@@ -30,15 +30,9 @@ import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
 import org.dockfx.NodeManager;
-import org.dockfx.events.DockNodeEvent;
-import org.dockfx.events.DockNodeEventListener;
-import org.dockfx.taskBar.TaskBar;
-
-import com.sun.javafx.tk.Toolkit.Task;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -49,11 +43,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 
@@ -110,16 +100,18 @@ public class DockFX extends Application {
     // after both the left and right node's are docked the center docks end up with 50% of the width
 
     Label label1 = new Label("Try cascading or tiling subwindows with keyboard shortcuts :");
-    Label label2 =
-        new Label(" c - cascade all \n v - tile all vertically \n h - tile all horizontally");
+    Label label2 = new Label(
+        " alt + c - cascade all \n alt + v - tile all vertically \n alt + h - tile all horizontally");
     VBox vBox = new VBox(label1, label2);
     vBox.setPadding(new Insets(10));
+
     DockNode tabsDock = nodeManager.getDockNode(tabs, "Tabs Dock", new ImageView(dockImage));
     tabsDock.setPrefSize(300, 500);
     tabsDock.dock(dockPane, DockPos.TOP);
+
     DockNode tableDock = nodeManager.getDockNode(vBox);
     // let's disable our table from being undocked
-    //tableDock.setDockTitleBar(null);
+    // tableDock.setDockTitleBar(null);
     tableDock.setPrefSize(300, 500);
     tableDock.dock(dockPane, DockPos.BOTTOM);
 
@@ -131,22 +123,15 @@ public class DockFX extends Application {
     // and the stage is shown
     DockNode treeDock =
         nodeManager.getDockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
-    treeDock.setPrefSize(100, 500);
+    treeDock.setPrefSize(115, 500);
     treeDock.dock(dockPane, DockPos.LEFT);
     treeDock = nodeManager.getDockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
-    treeDock.setPrefSize(100, 500);
+    treeDock.setPrefSize(115, 500);
     treeDock.dock(dockPane, DockPos.RIGHT);
 
-    nodeManager.addEventListener(new DockNodeEventListener() {
-      @Override
-      public void dockNodeFloated(DockNodeEvent e) {
-        e.getSource().setTitle("Floating");
-      }
-      @Override
-      public void dockNodeDocked(DockNodeEvent e) {
-        e.getSource().setTitle("Docked");
-      }
-    });
+    treeDock.setMaximizable(false);
+    treeDock.setMinimizable(false);
+    treeDock.setCloseable(false);
 
     // test the look and feel with both Caspian and Modena
     Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
@@ -160,9 +145,6 @@ public class DockFX extends Application {
 
     // TODO: after this feel free to apply your own global stylesheet using the StyleManager class
 
-//    TaskBar taskBar = new TaskBar();
-//    dockPane.setAlignment(Pos.BOTTOM_CENTER);
-//    dockPane.getChildren().add(taskBar);
   }
 
   private TreeView<String> generateRandomTree() {

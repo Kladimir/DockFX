@@ -55,6 +55,19 @@ import javafx.stage.Window;
 public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
 
   /**
+   * position of minimize button in title bar
+   */
+  public static final int BUTTON_POSITION_MINIMIZE = 0;
+  /**
+   * position of state button in title bar
+   */
+  public static final int BUTTON_POSITION_STATE = 1;
+  /**
+   * position of close button in title bar
+   */
+  public static final int BUTTON_POSITION_CLOSE = 2;
+
+  /**
    * The DockNode this node is a title bar for.
    */
   private DockNode dockNode;
@@ -104,7 +117,7 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
     minimizeButton = new Button();
     minimizeButton.setOnAction(new EventHandler<ActionEvent>() {
       public void handle(ActionEvent event) {
-        System.out.println("MINIMIZE");
+        dockNode.setMinimized(true);
       }
     });
 
@@ -163,6 +176,10 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
    */
   public final Button getStateButton() {
     return stateButton;
+  }
+
+  public final Button getMinimizeButton() {
+    return minimizeButton;
   }
 
   /**

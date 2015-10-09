@@ -276,6 +276,9 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     dockRootPane.getStyleClass().add("dock-root-pane");
     dockPosIndicator.getStyleClass().add("dock-pos-indicator");
     dockAreaIndicator.getStyleClass().add("dock-area-indicator");
+
+    root = new SplitPane();
+    this.getChildren().add(root);
   }
 
   /**
@@ -358,11 +361,8 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     node.addEventFilter(DockEvent.DOCK_OVER, dockNodeEventHandler);
 
     SplitPane split = (SplitPane) root;
-    if (split == null) {
-      split = new SplitPane();
+    if (split.getItems().size() == 0) {
       split.getItems().add(node);
-      root = split;
-      this.getChildren().add(root);
       return;
     }
 
@@ -660,8 +660,10 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     if ((event.getEventType() == DockEvent.DOCK_EXIT && !this.receivedEnter)
         || event.getEventType() == DockEvent.DOCK_RELEASED) {
       if (dockIndicatorPopup.isShowing()) {
-        dockIndicatorOverlay.hide();
         dockIndicatorPopup.hide();
+      }
+      if (dockIndicatorOverlay.isShowing()) {
+        dockIndicatorOverlay.hide();
       }
     }
   }

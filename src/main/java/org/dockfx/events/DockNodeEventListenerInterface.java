@@ -51,6 +51,13 @@ public interface DockNodeEventListenerInterface {
   public void dockNodeMinimized(DockNodeEvent e);
 
   /**
+   * Fired when restored to floating window state from minimized or maximized state
+   *
+   * @param e Event object
+   */
+  public void dockNodeRestored(DockNodeEvent e);
+
+  /**
    * Fired when node is docked
    *
    * @param e Event object

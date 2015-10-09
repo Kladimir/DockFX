@@ -30,14 +30,14 @@ import org.dockfx.events.DockNodeEventListener;
 import org.dockfx.events.DockNodeEventListenerInterface;
 import org.dockfx.taskBar.TaskBar;
 
-import com.sun.javafx.tk.Toolkit.Task;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Window;
 
@@ -61,6 +61,9 @@ public class NodeManager {
    */
   private ObservableList<DockNode> dockNodes = FXCollections.observableArrayList();
 
+  /**
+   * Set of listeners listening to NodeEvents of all managed nodes.
+   */
   private Set<DockNodeEventListenerInterface> listeners =
       new HashSet<DockNodeEventListenerInterface>();
 
@@ -69,6 +72,9 @@ public class NodeManager {
    */
   private DockPane dockPane;
 
+  /**
+   * Invisible bar at bottom of the stage where minimized nodes live
+   */
   private TaskBar taskBar;
 
   /**
@@ -83,9 +89,9 @@ public class NodeManager {
     this.dockPane = dockPane;
     scene.setOnKeyReleased((e) -> handleKeyReleased(e));
 
-    //taskBar = new TaskBar();
-    //dockPane.setAlignment(Pos.BOTTOM_CENTER);
-    //dockPane.getChildren().add(taskBar);
+    taskBar = new TaskBar();
+    dockPane.setAlignment(Pos.BOTTOM_CENTER);
+    dockPane.getChildren().add(taskBar);
   }
 
   /**
@@ -135,6 +141,7 @@ public class NodeManager {
   private void handleNodeCreated(DockNode newDockNode) {
     dockNodes.add(newDockNode);
     newDockNode.setOnKeyReleased((e) -> handleKeyReleased(e));
+
     newDockNode.addEventListener(new DockNodeEventListener() {
 
       @Override
@@ -164,6 +171,7 @@ public class NodeManager {
         for (DockNodeEventListenerInterface listener : listeners) {
           listener.dockNodeMaximized(e);
         }
+        System.out.println("Maximized");
       }
 
       @Override
@@ -171,7 +179,17 @@ public class NodeManager {
         for (DockNodeEventListenerInterface listener : listeners) {
           listener.dockNodeMinimized(e);
         }
+        taskBar.addTaskBarItemForNode(e.getSource());
+        System.out.println("Minimized");
       }
+
+      @Override
+      public void dockNodeRestored(DockNodeEvent e) {
+        for (DockNodeEventListenerInterface listener : listeners) {
+          listener.dockNodeRestored(e);
+        }
+        System.out.println("Restored");
+      };
 
       @Override
       public void dockNodeWindowed(DockNodeEvent e) {
@@ -266,11 +284,16 @@ public class NodeManager {
    * @param e Key event
    */
   public void handleKeyReleased(KeyEvent e) {
-    if (e.getCode() == KeyCode.C) {
+
+    KeyCombination keyCombCascade = new KeyCodeCombination(KeyCode.C, KeyCombination.ALT_DOWN);
+    KeyCombination keyCombTileHor = new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN);
+    KeyCombination keyCombTileVer = new KeyCodeCombination(KeyCode.V, KeyCombination.ALT_DOWN);
+
+    if (keyCombCascade.match(e)) {
       cascadeNodes();
-    } else if (e.getCode() == KeyCode.H) {
+    } else if (keyCombTileHor.match(e)) {
       tileHorizontally();
-    } else if (e.getCode() == KeyCode.V) {
+    } else if (keyCombTileVer.match(e)) {
       tileVertically();
     }
     e.consume();

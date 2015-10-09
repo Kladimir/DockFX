@@ -127,6 +127,19 @@
   -fx-background-color: -fx-background;
 }
 
+.task-bar-item {
+  -fx-background-color: -fx-background;
+  -fx-padding: 2;
+  -fx-spacing: 3;
+  -fx-border-width: 1;
+  -fx-border-color: -fx-outer-border;
+  -fx-border-radius: 1;
+}
+
+.task-bar-item .button {
+  -fx-padding: 1 4 1 4;
+}
+
 .dock-title-bar {
   -fx-background-color: -fx-background;
   -fx-padding: 2;
