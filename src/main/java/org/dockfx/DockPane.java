@@ -578,7 +578,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
         dockIndicatorOverlay.show(DockPane.this, topLeft.getX(), topLeft.getY());
       }
     } else if (event.getEventType() == DockEvent.DOCK_OVER) {
-      this.receivedEnter = false;
+      this.receivedEnter = false;;
 
       dockPosDrag = null;
       dockAreaDrag = dockNodeDrag;
@@ -597,7 +597,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
         }
       }
 
-      if (dockPosDrag != null) {
+      if (dockPosDrag != null && dockAreaDrag != null) {
         Point2D originToScene = dockAreaDrag.localToScene(0, 0);
 
         dockAreaIndicator.setVisible(true);

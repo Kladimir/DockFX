@@ -447,7 +447,11 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         Window owner = stage.getOwner();
         stagePosition = floatScene.add(new Point2D(owner.getX(), owner.getY()));
       } else {
-        stagePosition = floatScreen;
+        if (floatScreen == null) {
+          stagePosition = new Point2D(0, 0);
+        } else {
+          stagePosition = floatScreen;
+        }
       }
       if (translation != null) {
         stagePosition = stagePosition.add(translation);

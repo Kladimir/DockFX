@@ -33,6 +33,7 @@ import org.dockfx.NodeManager;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -60,8 +61,6 @@ public class DockFX extends Application {
 
   @SuppressWarnings("unchecked")
   private void launchDemo(Stage primaryStage) {
-    primaryStage.setTitle("DockFX");
-
     primaryStage.setTitle("DockFX");
 
     // create a dock pane that will manage our dock nodes and handle the layout
@@ -125,7 +124,6 @@ public class DockFX extends Application {
     DockNode loginDock = nodeManager.getDockNode("demo/LoginForm.fxml", "Personal info", new ImageView(dockImage));
     loginDock.setPrefSize(100, 500);
     loginDock.dock(dockPane, DockPos.LEFT);
-
 
     // can be created and docked before or after the scene is created
     // and the stage is shown
