@@ -397,11 +397,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
    * @param maximized Whether the node is currently maximized.
    */
   public final void setMaximized(boolean maximized) {
-
-    if (isMaximizable()) {
-      System.out.println("is maximizable");
-    }
-
     if (isMaximizable() && !isMaximized() && maximized) {
       fireMaximizeEvent();
       maximizedProperty.set(true);
@@ -989,6 +984,16 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
       undock();
     }
     fireCloseEvent();
+  }
+
+  /**
+   * Returns true if this node has parent is scene graph structure.
+   *
+   * @return True if node has parent in scene graph, false if not.
+   */
+  public boolean hasParent() {
+    boolean result = (this.getParent() == null) ? false : true;
+    return result;
   }
 
   /**

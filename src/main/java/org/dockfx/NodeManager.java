@@ -24,6 +24,7 @@ package org.dockfx;
 import java.lang.Math;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -218,7 +219,6 @@ public class NodeManager {
         for (DockNodeEventListenerInterface listener : listeners) {
           listener.dockNodeMaximized(e);
         }
-        System.out.println("Maximized");
       }
 
       @Override
@@ -227,7 +227,6 @@ public class NodeManager {
           listener.dockNodeMinimized(e);
         }
         taskBar.addTaskBarItemForNode(e.getSource());
-        System.out.println("Minimized");
       }
 
       @Override
@@ -235,7 +234,6 @@ public class NodeManager {
         for (DockNodeEventListenerInterface listener : listeners) {
           listener.dockNodeRestored(e);
         }
-        System.out.println("Restored");
       };
 
       @Override
@@ -291,10 +289,12 @@ public class NodeManager {
     Window dockPaneWidndow = dockPane.getScene().getWindow();
     int i = 1;
     for (DockNode dockNode : nodesToCascade) {
-      if (dockNode.isFloatable()) {
+      if (dockNode.hasParent() && dockNode.isFloatable()) {
         dockNode.setFloating(true);
-        dockNode.getStage().setWidth(Math.max(dockNode.getPrefWidth(), dockNode.getContents().prefWidth(0)));
-        dockNode.getStage().setHeight(Math.max(dockNode.getPrefHeight(), dockNode.getContents().prefHeight(0)));
+        dockNode.getStage()
+            .setWidth(Math.max(dockNode.getPrefWidth(), dockNode.getContents().prefWidth(0)));
+        dockNode.getStage()
+            .setHeight(Math.max(dockNode.getPrefHeight(), dockNode.getContents().prefHeight(0)));
         dockNode.getStage().setX(dockPaneWidndow.getX() + i * CASCADE_OFFSET);
         dockNode.getStage().setY(dockPaneWidndow.getY() + i * CASCADE_OFFSET);
         i++;
@@ -306,14 +306,30 @@ public class NodeManager {
    * Tiles all nodes horizontally.
    */
   public void tileHorizontally() {
-    dockPane.tileNodes(dockNodes, TileOrientation.HORIZOTAL);
+    dockPane.tileNodes(getTileableNodes(), TileOrientation.HORIZOTAL);
   }
 
   /**
    * Tiles all nodes vertically.
    */
   public void tileVertically() {
-    dockPane.tileNodes(dockNodes, TileOrientation.VERTICAL);
+    dockPane.tileNodes(getTileableNodes(), TileOrientation.VERTICAL);
+  }
+
+  /**
+   * Returns subset of managed nodes that can be tiled For example node that does not have parent
+   * therefore is not in scene graph cannot be tiled.
+   *
+   * @return List of nodes that can be tiled.
+   */
+  public List<DockNode> getTileableNodes() {
+    List<DockNode> tileableNodes = new LinkedList<>();
+    for (DockNode dockNode : dockNodes) {
+      if (dockNode.hasParent()) {
+        tileableNodes.add(dockNode);
+      }
+    }
+    return tileableNodes;
   }
 
   /**
