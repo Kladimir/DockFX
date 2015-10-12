@@ -23,6 +23,8 @@ package org.dockfx;
 import java.util.HashMap;
 import java.util.Stack;
 
+import org.dockfx.events.DockEvent;
+
 import com.sun.javafx.stage.StageHelper;
 
 import javafx.collections.FXCollections;
@@ -47,10 +49,23 @@ import javafx.stage.Window;
 /**
  * Base class for a dock node title bar that provides the mouse dragging functionality, captioning,
  * docking, and state manipulation.
- * 
+ *
  * @since DockFX 0.1
  */
 public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
+
+  /**
+   * position of minimize button in title bar
+   */
+  public static final int BUTTON_POSITION_MINIMIZE = 0;
+  /**
+   * position of state button in title bar
+   */
+  public static final int BUTTON_POSITION_STATE = 1;
+  /**
+   * position of close button in title bar
+   */
+  public static final int BUTTON_POSITION_CLOSE = 2;
 
   /**
    * The DockNode this node is a title bar for.
@@ -63,11 +78,11 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
   /**
    * State manipulation buttons including close, maximize, detach, and restore.
    */
-  private Button closeButton, stateButton;
+  private Button closeButton, stateButton, minimizeButton;
 
   /**
    * Creates a default DockTitleBar with captions and dragging behavior.
-   * 
+   *
    * @param dockNode The docking node that requires a title bar.
    */
   public DockTitleBar(DockNode dockNode) {
@@ -99,11 +114,18 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
     });
     closeButton.visibleProperty().bind(dockNode.closableProperty());
 
+    minimizeButton = new Button();
+    minimizeButton.setOnAction(new EventHandler<ActionEvent>() {
+      public void handle(ActionEvent event) {
+        dockNode.setMinimized(true);
+      }
+    });
+
     // create a pane that will stretch to make the buttons right aligned
     Pane fillPane = new Pane();
     HBox.setHgrow(fillPane, Priority.ALWAYS);
 
-    getChildren().addAll(label, fillPane, stateButton, closeButton);
+    getChildren().addAll(label, fillPane, minimizeButton, stateButton, closeButton);
 
     this.addEventHandler(MouseEvent.MOUSE_PRESSED, this);
     this.addEventHandler(MouseEvent.DRAG_DETECTED, this);
@@ -113,6 +135,7 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
     label.getStyleClass().add("dock-title-label");
     closeButton.getStyleClass().add("dock-close-button");
     stateButton.getStyleClass().add("dock-state-button");
+    minimizeButton.getStyleClass().add("dock-minimize-button");
     this.getStyleClass().add("dock-title-bar");
 
   }
@@ -155,6 +178,10 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
     return stateButton;
   }
 
+  public final Button getMinimizeButton() {
+    return minimizeButton;
+  }
+
   /**
    * The dock node that is associated with this title bar.
    *
@@ -182,7 +209,7 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
   /**
    * The task that is to be executed when the dock event target is picked. This provides context for
    * what specific events and what order the events should be fired.
-   * 
+   *
    * @since DockFX 0.1
    */
   private abstract class EventTask {
@@ -193,7 +220,7 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
 
     /**
      * Creates a default DockTitleBar with captions and dragging behavior.
-     * 
+     *
      * @param node The node that was chosen as the event target.
      * @param dragNode The node that was last event target.
      */
@@ -221,7 +248,7 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
    * the location. Once the event target is chosen run the event task with the target and the
    * previous target of the last dock event if one is cached. If an event target is not found fire
    * the explicit dock event on the stage root if one is provided.
-   * 
+   *
    * @param location The location of the dock event in screen coordinates.
    * @param eventTask The event task to be run when the event target is found.
    * @param explicit The explicit event to be fired on the stage root when no event target is found.
@@ -229,7 +256,6 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
   private void pickEventTarget(Point2D location, EventTask eventTask, Event explicit) {
     // RFE for public scene graph traversal API filed but closed:
     // https://bugs.openjdk.java.net/browse/JDK-8133331
-
     ObservableList<Stage> stages =
         FXCollections.unmodifiableObservableList(StageHelper.getStages());
     // fire the dock over event for the active stages

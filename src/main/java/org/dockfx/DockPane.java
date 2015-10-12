@@ -20,7 +20,10 @@
 
 package org.dockfx;
 
+import java.util.List;
 import java.util.Stack;
+
+import org.dockfx.events.DockEvent;
 
 import com.sun.javafx.css.StyleManager;
 
@@ -49,7 +52,7 @@ import javafx.util.Duration;
  * Base class for a dock pane that provides the layout of the dock nodes. Stacking the dock nodes to
  * the center in a TabPane will be added in a future release. For now the DockPane uses the relative
  * sizes of the dock nodes and lays them out in a tree of SplitPanes.
- * 
+ *
  * @since DockFX 0.1
  */
 public class DockPane extends StackPane implements EventHandler<DockEvent> {
@@ -107,7 +110,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
   /**
    * Base class for a dock indicator button that allows it to be displayed during a dock event and
    * continue to receive input.
-   * 
+   *
    * @since DockFX 0.1
    */
   public class DockPosButton extends Button {
@@ -133,7 +136,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     /**
      * Whether this dock indicator button is used for docking a node relative to the root of the
      * dock pane.
-     * 
+     *
      * @param dockRoot Whether this indicator button is used for docking a node relative to the root
      *        of the dock pane.
      */
@@ -143,7 +146,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
 
     /**
      * The docking position indicated by this button.
-     * 
+     *
      * @param dockPos The docking position indicated by this button.
      */
     public final void setDockPos(DockPos dockPos) {
@@ -152,7 +155,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
 
     /**
      * The docking position indicated by this button.
-     * 
+     *
      * @return The docking position indicated by this button.
      */
     public final DockPos getDockPos() {
@@ -162,7 +165,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     /**
      * Whether this dock indicator button is used for docking a node relative to the root of the
      * dock pane.
-     * 
+     *
      * @return Whether this indicator button is used for docking a node relative to the root of the
      *         dock pane.
      */
@@ -273,12 +276,15 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     dockRootPane.getStyleClass().add("dock-root-pane");
     dockPosIndicator.getStyleClass().add("dock-pos-indicator");
     dockAreaIndicator.getStyleClass().add("dock-area-indicator");
+
+    root = new SplitPane();
+    this.getChildren().add(root);
   }
 
   /**
    * The Timeline used to animate the docking area indicator in the dock indicator overlay for this
    * dock pane.
-   * 
+   *
    * @return The Timeline used to animate the docking area indicator in the dock indicator overlay
    *         for this dock pane.
    */
@@ -288,7 +294,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
 
   /**
    * Helper function to retrieve the URL of the default style sheet used by DockFX.
-   * 
+   *
    * @return The URL of the default style sheet used by DockFX.
    */
   public final static String getDefaultUserAgentStyleheet() {
@@ -314,7 +320,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
    * A wrapper to the type parameterized generic EventHandler that allows us to remove it from its
    * listener when the dock node becomes detached. It is specifically used to monitor which dock
    * node in this dock pane's layout we are currently dragging over.
-   * 
+   *
    * @since DockFX 0.1
    */
   private class DockNodeEventHandler implements EventHandler<DockEvent> {
@@ -326,7 +332,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     /**
      * Creates a default dock node event handler that will help this dock pane track the current
      * docking area.
-     * 
+     *
      * @param node The node that is to listen for docking events and report to the encapsulating
      *        docking pane.
      */
@@ -344,7 +350,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
    * Dock the node into this dock pane at the given docking position relative to the sibling in the
    * layout. This is used to relatively position the dock nodes to other nodes given their preferred
    * size.
-   * 
+   *
    * @param node The node that is to be docked into this dock pane.
    * @param dockPos The docking position of the node relative to the sibling.
    * @param sibling The sibling of this node in the layout.
@@ -355,11 +361,8 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     node.addEventFilter(DockEvent.DOCK_OVER, dockNodeEventHandler);
 
     SplitPane split = (SplitPane) root;
-    if (split == null) {
-      split = new SplitPane();
+    if (split.getItems().size() == 0) {
       split.getItems().add(node);
-      root = split;
-      this.getChildren().add(root);
       return;
     }
 
@@ -459,14 +462,13 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
         }
       }
     }
-
   }
 
   /**
    * Dock the node into this dock pane at the given docking position relative to the root in the
    * layout. This is used to relatively position the dock nodes to other nodes given their preferred
    * size.
-   * 
+   *
    * @param node The node that is to be docked into this dock pane.
    * @param dockPos The docking position of the node relative to the sibling.
    */
@@ -474,9 +476,41 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     dock(node, dockPos, root);
   }
 
+
+  /**
+   * Tiles passed nodes in this dock pane. All nodes are floated, then docked and finally split pane
+   * dividers positions are set.
+   *
+   * @param dockNodes Dock nodes to be tiled.
+   * @param orientation Horizontal or Vertical orientation of tiling.
+   */
+  public void tileNodes(List<DockNode> dockNodes, TileOrientation orientation) {
+    // first float everything
+    for (DockNode dockNode : dockNodes) {
+      if (dockNode.isFloatable()) {
+        dockNode.setFloating(true);
+      }
+    }
+    // dock everything
+    for (DockNode dockNode : dockNodes) {
+      if (dockNode.isFloatable() || !dockNode.isDocked()) {
+        if (orientation == TileOrientation.HORIZOTAL) {
+          dockNode.dock(this, DockPos.RIGHT);
+        } else {
+          dockNode.dock(this, DockPos.TOP);
+        }
+      }
+    }
+    SplitPane splitPane = (SplitPane) root;
+    // set split pane divider position
+    for (int i = 0; i < dockNodes.size() - 1; i++) {
+      splitPane.setDividerPosition(i, (float) (i + 1) / (dockNodes.size()));
+    }
+  }
+
   /**
    * Detach the node from this dock pane removing it from the layout.
-   * 
+   *
    * @param node The node that is to be removed from this dock pane.
    */
   public void undock(DockNode node) {
@@ -626,8 +660,10 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     if ((event.getEventType() == DockEvent.DOCK_EXIT && !this.receivedEnter)
         || event.getEventType() == DockEvent.DOCK_RELEASED) {
       if (dockIndicatorPopup.isShowing()) {
-        dockIndicatorOverlay.hide();
         dockIndicatorPopup.hide();
+      }
+      if (dockIndicatorOverlay.isShowing()) {
+        dockIndicatorOverlay.hide();
       }
     }
   }

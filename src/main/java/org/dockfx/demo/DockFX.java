@@ -29,9 +29,12 @@ import java.util.Random;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
+import org.dockfx.NodeManager;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -40,6 +43,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 
@@ -49,15 +53,21 @@ public class DockFX extends Application {
     launch(args);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void start(Stage primaryStage) {
+    launchDemo(primaryStage);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void launchDemo(Stage primaryStage) {
     primaryStage.setTitle("DockFX");
 
     primaryStage.setTitle("DockFX");
 
     // create a dock pane that will manage our dock nodes and handle the layout
     DockPane dockPane = new DockPane();
+    Scene scene = new Scene(dockPane, 800, 500);
+    NodeManager nodeManager = new NodeManager(dockPane, scene);
 
     // create a default test node for the center of the dock area
     TabPane tabs = new TabPane();
@@ -91,31 +101,45 @@ public class DockFX extends Application {
     // they will have 300 / 100 + 300 (400) or 75% of their previous width
     // after both the left and right node's are docked the center docks end up with 50% of the width
 
-    DockNode tabsDock = new DockNode(tabs, "Tabs Dock", new ImageView(dockImage));
-    tabsDock.setPrefSize(300, 100);
+    Label label1 = new Label("Try cascading or tiling subwindows with keyboard shortcuts :");
+    Label label2 = new Label(
+        " alt + c - cascade all \n alt + v - tile all vertically \n alt + h - tile all horizontally");
+    VBox vBox = new VBox(label1, label2);
+    vBox.setPadding(new Insets(10));
+
+    DockNode tabsDock = nodeManager.getDockNode(tabs, "Tabs Dock", new ImageView(dockImage));
+    tabsDock.setPrefSize(300, 500);
     tabsDock.dock(dockPane, DockPos.TOP);
-    DockNode tableDock = new DockNode(tableView);
+
+    DockNode tableDock = nodeManager.getDockNode(vBox);
     // let's disable our table from being undocked
-    tableDock.setDockTitleBar(null);
-    tableDock.setPrefSize(300, 100);
+    // tableDock.setDockTitleBar(null);
+    tableDock.setPrefSize(300, 500);
     tableDock.dock(dockPane, DockPos.BOTTOM);
 
-    primaryStage.setScene(new Scene(dockPane, 800, 500));
+    primaryStage.setScene(scene);
     primaryStage.sizeToScene();
-
     primaryStage.show();
 
     // loads interface from fxml file
-    DockNode loginDock = new DockNode("demo/LoginForm.fxml", "Personal info", new ImageView(dockImage));
-    loginDock.setPrefSize(100, 100);
+    DockNode loginDock = nodeManager.getDockNode("demo/LoginForm.fxml", "Personal info", new ImageView(dockImage));
+    loginDock.setPrefSize(100, 500);
     loginDock.dock(dockPane, DockPos.LEFT);
 
 
     // can be created and docked before or after the scene is created
     // and the stage is shown
-    DockNode treeDock = new DockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
-    treeDock.setPrefSize(100, 100);
+    DockNode treeDock =
+        nodeManager.getDockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
+    treeDock.setPrefSize(115, 500);
+    treeDock.dock(dockPane, DockPos.LEFT);
+    treeDock = nodeManager.getDockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
+    treeDock.setPrefSize(115, 500);
     treeDock.dock(dockPane, DockPos.RIGHT);
+
+    treeDock.setMaximizable(false);
+    treeDock.setMinimizable(false);
+    treeDock.setCloseable(false);
 
     // test the look and feel with both Caspian and Modena
     Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
@@ -128,6 +152,7 @@ public class DockFX extends Application {
     DockPane.initializeDefaultUserAgentStylesheet();
 
     // TODO: after this feel free to apply your own global stylesheet using the StyleManager class
+
   }
 
   private TreeView<String> generateRandomTree() {

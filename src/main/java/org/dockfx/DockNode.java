@@ -21,7 +21,11 @@
 package org.dockfx;
 
 import org.dockfx.viewControllers.BaseViewController;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.dockfx.events.DockNodeEvent;
+import org.dockfx.events.DockNodeEventListenerInterface;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -103,6 +107,12 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   private static final PseudoClass MAXIMIZED_PSEUDO_CLASS = PseudoClass.getPseudoClass("maximized");
 
   /**
+   * Contains listeners for DockNode events
+   */
+  private Set<DockNodeEventListenerInterface> listeners =
+      new HashSet<DockNodeEventListenerInterface>();
+
+  /**
    * Boolean property maintaining whether this node is currently maximized.
    *
    * @defaultValue false
@@ -118,12 +128,10 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
       stage.setMaximized(get());
 
-      // TODO: This is a work around to fill the screen bounds and not overlap
-      // the task bar when
-      // the window is undecorated as in Visual Studio. A similar work around
-      // needs applied for
-      // JFrame in Swing.
-      // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4737788
+
+      // TODO: This is a work around to fill the screen bounds and not overlap the task bar when
+      // the window is undecorated as in Visual Studio. A similar work around needs applied for
+      // JFrame in Swing. http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4737788
       // Bug report filed:
       // https://bugs.openjdk.java.net/browse/JDK-8133330
       if (this.get()) {
@@ -180,6 +188,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   }
 
   /**
+
    * Creates a default DockNode with contents loaded from FXMLFile at provided path.
    *
    * @param FXMLPath path to fxml file.
@@ -232,6 +241,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     return loader;
   }
 
+
   /**
    * Sets DockNodes contents, title and title bar graphic
    *
@@ -252,6 +262,90 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     VBox.setVgrow(contents, Priority.ALWAYS);
 
     this.getStyleClass().add("dock-node");
+  }
+
+  /** Adds new event lister for DockNode events.
+  *
+  * @param eventListener Listener to add.
+  */
+  public void addEventListener(DockNodeEventListenerInterface eventListener) {
+    listeners.add(eventListener);
+  }
+
+  /**
+   * Removes event listener from DockNode eventListeners.
+   *
+   * @param eventListener Listener to remove.
+   */
+  public void removeEventListener(DockNodeEventListenerInterface eventListener) {
+    listeners.remove(eventListener);
+  }
+
+  /**
+   * Fires DockNode close event.
+   */
+  private void fireCloseEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeClosed(e);
+    }
+  }
+
+  /**
+   * Fires DockNode maximize event
+   */
+  private void fireMaximizeEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeMaximized(e);
+    }
+  }
+
+  /**
+   * Fires DockNode windowed event
+   */
+  private void fireWindowEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeWindowed(e);
+    }
+  }
+
+  /**
+   * Fires DockNode minimize event
+   */
+  private void fireMinimizeEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeMinimized(e);
+    }
+  }
+
+  private void fireRestoreEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeRestored(e);
+    }
+  }
+
+  /**
+   * Fires DockNode dock event
+   */
+  private void fireDockEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeDocked(e);
+    }
+  }
+
+  /**
+   * Fires DockNode float event
+   */
+  private void fireFloatEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeFloated(e);
+    }
   }
 
   /**
@@ -288,8 +382,10 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
       } else {
         this.getChildren().add(0, dockTitleBar);
       }
+      setFloatable(true);
     } else {
       this.getChildren().remove(this.dockTitleBar);
+      setFloatable(false);
     }
 
     this.dockTitleBar = dockTitleBar;
@@ -301,7 +397,18 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
    * @param maximized Whether the node is currently maximized.
    */
   public final void setMaximized(boolean maximized) {
-    maximizedProperty.set(maximized);
+
+    if (isMaximizable()) {
+      System.out.println("is maximizable");
+    }
+
+    if (isMaximizable() && !isMaximized() && maximized) {
+      fireMaximizeEvent();
+      maximizedProperty.set(true);
+    } else if (!maximized && isMaximized()) {
+      fireRestoreEvent();
+      maximizedProperty.set(false);
+    }
   }
 
   /**
@@ -400,8 +507,9 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
       // without this it subtracts the native border sizes from the scene
       // size
       stage.sizeToScene();
-
       stage.show();
+
+      fireFloatEvent();
     } else if (!floating && this.isFloating()) {
       this.floatingProperty.set(floating);
 
@@ -615,6 +723,127 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   }
 
   /**
+   * Boolean property maintaining whether this node is minimizable.
+   *
+   * @defaultValue true
+   */
+  public final BooleanProperty minimizableProperty() {
+    return minimizableProperty;
+  }
+
+  private BooleanProperty minimizableProperty = new SimpleBooleanProperty(true) {
+    @Override
+    public String getName() {
+      return "minimizable";
+    }
+  };
+
+  public final boolean isMinimizable() {
+    return minimizableProperty.get();
+  }
+
+  public final void setMinimizable(boolean minimizable) {
+    if (minimizable && !this.isMinimizable()) {
+      dockTitleBar.getChildren().add(DockTitleBar.BUTTON_POSITION_MINIMIZE,
+          dockTitleBar.getMinimizeButton());
+    } else if (!minimizable && this.isMinimizable()) {
+      dockTitleBar.getChildren().remove(dockTitleBar.getMinimizeButton());
+    }
+    this.minimizableProperty.set(minimizable);
+  }
+
+  /**
+   * Boolean property maintaining whether this node is maximizable.
+   *
+   * @defaultValue true
+   */
+  public final BooleanProperty maximizableProperty() {
+    return maximizableProperty;
+  }
+
+  private BooleanProperty maximizableProperty = new SimpleBooleanProperty(true) {
+    @Override
+    public String getName() {
+      return "maximizable";
+    }
+  };
+
+  public final boolean isMaximizable() {
+    return maximizableProperty.get();
+  }
+
+  public final void setMaximizable(boolean maximizable) {
+    if (maximizable && !this.isMaximizable()) {
+      dockTitleBar.getChildren().add(DockTitleBar.BUTTON_POSITION_STATE,
+          dockTitleBar.getStateButton());
+    } else if (!maximizable && this.isMaximizable()) {
+      dockTitleBar.getChildren().remove(dockTitleBar.getStateButton());
+    }
+    this.maximizableProperty.set(maximizable);
+  }
+
+  /**
+   * Boolean property maintaining whether this node is closeable.
+   *
+   * @defaultValue true
+   */
+  public final BooleanProperty closeableProperty() {
+    return closeableProperty;
+  }
+
+  private BooleanProperty closeableProperty = new SimpleBooleanProperty(true) {
+    @Override
+    public String getName() {
+      return "closeable";
+    }
+  };
+
+  public final boolean isCloseable() {
+    return closeableProperty.get();
+  }
+
+  public final void setCloseable(boolean closeable) {
+    if (closeable && !this.isCloseable()) {
+      dockTitleBar.getChildren().add(DockTitleBar.BUTTON_POSITION_CLOSE,
+          dockTitleBar.getCloseButton());
+    } else if (!closeable && this.isCloseable()) {
+      dockTitleBar.getChildren().remove(dockTitleBar.getCloseButton());
+    }
+  }
+
+  /**
+   * Boolean property maintaining whether this node is currently minimized.
+   *
+   * @defaultValue false
+   */
+  public final BooleanProperty minimizedProperty() {
+    return minimizedProperty;
+  }
+
+  private BooleanProperty minimizedProperty = new SimpleBooleanProperty(false) {
+    @Override
+    public String getName() {
+      return "minimized";
+    };
+  };
+
+  public final boolean isMinimized() {
+    return minimizedProperty.get();
+  }
+
+  public final void setMinimized(boolean minimized) {
+    if (!minimized && isMinimized()) {
+      setVisible(true);
+      fireRestoreEvent();
+    } else if (minimized && !isMinimized()) {
+      setFloating(true);
+      setVisible(false);
+      fireMinimizeEvent();
+    }
+    this.minimizedProperty.set(minimized);
+  }
+
+  /**
    * Boolean property maintaining whether this node is currently closable.
    *
    * @defaultValue true
@@ -736,6 +965,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
     this.dockPane = dockPane;
     this.dockedProperty.set(true);
+    fireDockEvent();
   }
 
   /**
@@ -758,6 +988,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     } else if (isDocked()) {
       undock();
     }
+    fireCloseEvent();
   }
 
   /**
