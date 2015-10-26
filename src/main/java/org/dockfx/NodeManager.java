@@ -90,9 +90,8 @@ public class NodeManager {
    * @param scene Scene dockPane will be added to
    *
    */
-  public NodeManager(DockPane dockPane, Scene scene) {
+  public NodeManager(DockPane dockPane) {
     this.dockPane = dockPane;
-    scene.setOnKeyReleased((e) -> handleKeyReleased(e));
 
     taskBar = new TaskBar();
     dockPane.setAlignment(Pos.BOTTOM_CENTER);
@@ -188,7 +187,6 @@ public class NodeManager {
    */
   private void handleNodeCreated(DockNode newDockNode) {
     dockNodes.add(newDockNode);
-    newDockNode.setOnKeyReleased((e) -> handleKeyReleased(e));
 
     newDockNode.addEventListener(new DockNodeEventListener() {
 
@@ -339,26 +337,5 @@ public class NodeManager {
    */
   public ObservableList<DockNode> getDockNodes() {
     return dockNodes;
-  }
-
-  /**
-   * Key released handler. Currently handles keyboard shortcuts for cascading and tiling.
-   *
-   * @param e Key event
-   */
-  public void handleKeyReleased(KeyEvent e) {
-
-    KeyCombination keyCombCascade = new KeyCodeCombination(KeyCode.C, KeyCombination.ALT_DOWN);
-    KeyCombination keyCombTileHor = new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN);
-    KeyCombination keyCombTileVer = new KeyCodeCombination(KeyCode.V, KeyCombination.ALT_DOWN);
-
-    if (keyCombCascade.match(e)) {
-      cascadeNodes();
-    } else if (keyCombTileHor.match(e)) {
-      tileHorizontally();
-    } else if (keyCombTileVer.match(e)) {
-      tileVertically();
-    }
-    e.consume();
   }
 }

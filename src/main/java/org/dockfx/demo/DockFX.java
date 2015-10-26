@@ -66,7 +66,7 @@ public class DockFX extends Application {
     // create a dock pane that will manage our dock nodes and handle the layout
     DockPane dockPane = new DockPane();
     Scene scene = new Scene(dockPane, 800, 500);
-    NodeManager nodeManager = new NodeManager(dockPane, scene);
+    NodeManager nodeManager = new NodeManager(dockPane);
 
     // create a default test node for the center of the dock area
     TabPane tabs = new TabPane();
