@@ -44,10 +44,15 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -262,6 +267,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     VBox.setVgrow(contents, Priority.ALWAYS);
 
     this.getStyleClass().add("dock-node");
+
   }
 
   /**
@@ -408,6 +414,14 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   }
 
   public void floatNode(Point2D translation, DockPane dockPane) {
+    floatNode(translation, dockPane, false);
+  }
+
+  public void floatNode(DockPane dockPane, boolean centerInStage) {
+    floatNode(null, dockPane, centerInStage);
+  }
+
+  public void floatNode(Point2D translation, DockPane dockPane, boolean centerInStage) {
     // position the new stage relative to the old scene offset
     Point2D floatScene = this.localToScene(0, 0);
     Point2D floatScreen = this.localToScreen(0, 0);
@@ -429,7 +443,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     if (dockPane != null && dockPane.getScene() != null
         && dockPane.getScene().getWindow() != null) {
       stage.initOwner(dockPane.getScene().getWindow());
-      System.out.println("Node " + getTitle() + " INIT OWNER");
     }
 
     stage.initStyle(stageStyle);
@@ -445,7 +458,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
       stagePosition = floatScene.add(new Point2D(owner.getX(), owner.getY()));
     } else {
       if (floatScreen == null) {
-        stagePosition = new Point2D(0, 0);
+        stagePosition = new Point2D(dockPane.getScene().getWindow().getX(), dockPane.getScene().getWindow().getY());
       } else {
         stagePosition = floatScreen;
       }
@@ -478,15 +491,20 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
     double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
 
-    stage.setX(stagePosition.getX() - insetsDelta.getLeft());
-    stage.setY(stagePosition.getY() - insetsDelta.getTop());
-
     stage.setMinWidth(borderPane.minWidth(this.getHeight()) + insetsWidth);
     stage.setMinHeight(borderPane.minHeight(this.getWidth()) + insetsHeight);
 
     borderPane.setPrefSize(this.getWidth() + insetsWidth, this.getHeight() + insetsHeight);
     borderPane.setPrefSize(this.getPrefWidth(), this.getPrefHeight());
 
+    if (centerInStage && dockPane != null && dockPane.getScene() != null && getContents() instanceof Region) {
+      Region region = (Region)getContents();
+      stagePosition = stagePosition.add((dockPane.getScene().getWidth() / 2 ) - (region.getPrefWidth() / 2),
+          (dockPane.getScene().getHeight() / 2) - (region.getPrefHeight() / 2));
+    }
+
+    stage.setX(stagePosition.getX() - insetsDelta.getLeft());
+    stage.setY(stagePosition.getY() - insetsDelta.getTop());
     stage.setScene(scene);
 
     if (stageStyle == StageStyle.TRANSPARENT) {
@@ -793,35 +811,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
   }
 
   /**
-   * Boolean property maintaining whether this node is closeable.
-   *
-   * @defaultValue true
-   */
-  public final BooleanProperty closeableProperty() {
-    return closeableProperty;
-  }
-
-  private BooleanProperty closeableProperty = new SimpleBooleanProperty(true) {
-    @Override
-    public String getName() {
-      return "closeable";
-    }
-  };
-
-  public final boolean isCloseable() {
-    return closeableProperty.get();
-  }
-
-  public final void setCloseable(boolean closeable) {
-    if (closeable && !this.isCloseable()) {
-      dockTitleBar.getChildren().add(DockTitleBar.BUTTON_POSITION_CLOSE,
-          dockTitleBar.getCloseButton());
-    } else if (!closeable && this.isCloseable()) {
-      dockTitleBar.getChildren().remove(dockTitleBar.getCloseButton());
-    }
-  }
-
-  /**
    * Boolean property maintaining whether this node is currently minimized.
    *
    * @defaultValue false
@@ -874,8 +863,13 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     return closableProperty.get();
   }
 
-  public final void setClosable(boolean closable) {
-    this.closableProperty.set(closable);
+  public void setClosable(boolean closeable) {
+    if (closeable && !this.isClosable()) {
+      dockTitleBar.getChildren().add(DockTitleBar.BUTTON_POSITION_CLOSE,
+          dockTitleBar.getCloseButton());
+    } else if (!closeable && this.isClosable()) {
+      dockTitleBar.getChildren().remove(dockTitleBar.getCloseButton());
+    }
   }
 
   /**

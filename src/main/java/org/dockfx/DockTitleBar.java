@@ -41,9 +41,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -139,6 +142,7 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
     minimizeButton.getStyleClass().add("dock-minimize-button");
     this.getStyleClass().add("dock-title-bar");
 
+    // this.setBackground(new Background(new BackgroundFill(Color.AQUAMARINE, null, null)));
   }
 
   /**
@@ -349,6 +353,11 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
         dockNode.setFloating(true, new Point2D(0, DockTitleBar.this.getHeight()));
       } else {
         dockNode.setFloating(true);
+        // DragStart is replaced with this value because when node
+        // is dragged from docked to floating state it might end up positioned
+        // on the other side of screen.
+        // This way TitleBar is centered around the cursor
+        dragStart = new Point2D((this.getWidth() / 2), dragStart.getY());
       }
 
       // TODO: Find a better solution.
@@ -403,6 +412,7 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
     // dragging this way makes the interface more responsive in the event
     // the system is lagging as is the case with most current JavaFX
     // implementations on Linux
+
     stage.setX(event.getScreenX() - dragStart.getX() - insetsDelta.getLeft());
     stage.setY(event.getScreenY() - dragStart.getY() - insetsDelta.getTop());
 

@@ -110,7 +110,7 @@ public class DockFX extends Application {
     tabsDock.setPrefSize(300, 500);
     tabsDock.dock(dockPane, DockPos.TOP);
 
-    DockNode tableDock = nodeManager.getDockNode(vBox);
+    DockNode tableDock = nodeManager.getDockNode(vBox, "Tabs Dock", new ImageView(dockImage));
     // let's disable our table from being undocked
     // tableDock.setDockTitleBar(null);
     tableDock.setPrefSize(300, 500);
@@ -122,8 +122,6 @@ public class DockFX extends Application {
     DockNode loginDock = nodeManager.getDockNode("demo/LoginForm.fxml", "Personal info", new ImageView(dockImage));
     loginDock.setPrefSize(200, 500);
     loginDock.dock(dockPane, DockPos.LEFT);
-    loginDock.setFloating(true);
-    //loginDock.floatNode(null, dockPane);
 
     primaryStage.setScene(scene);
     primaryStage.sizeToScene();
@@ -141,7 +139,7 @@ public class DockFX extends Application {
 
     treeDock.setMaximizable(false);
     treeDock.setMinimizable(false);
-    treeDock.setCloseable(false);
+    treeDock.setClosable(false);
 
     // test the look and feel with both Caspian and Modena
     Application.setUserAgentStylesheet(Application.STYLESHEET_MODENA);
@@ -155,8 +153,7 @@ public class DockFX extends Application {
 
     // TODO: after this feel free to apply your own global stylesheet using the StyleManager class
 
-
-
+    //loginDock.floatNode(null, dockPane, false);
 
   }
 
