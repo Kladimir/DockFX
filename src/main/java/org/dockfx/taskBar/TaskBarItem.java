@@ -107,7 +107,5 @@ public class TaskBarItem extends HBox {
    */
   private void handleClick() {
     dockNode.setMinimized(false);
-    Pane group = (Pane) getParent();
-    group.getChildren().remove(this);
   }
 }

@@ -115,15 +115,19 @@ public class DockFX extends Application {
     // tableDock.setDockTitleBar(null);
     tableDock.setPrefSize(300, 500);
     tableDock.dock(dockPane, DockPos.BOTTOM);
+    //tableDock.setFloating(true);
+    //tableDock.floatNode(null, dockPane);
+
+    // loads interface from fxml file
+    DockNode loginDock = nodeManager.getDockNode("demo/LoginForm.fxml", "Personal info", new ImageView(dockImage));
+    loginDock.setPrefSize(200, 500);
+    loginDock.dock(dockPane, DockPos.LEFT);
+    loginDock.setFloating(true);
+    //loginDock.floatNode(null, dockPane);
 
     primaryStage.setScene(scene);
     primaryStage.sizeToScene();
     primaryStage.show();
-
-    // loads interface from fxml file
-    DockNode loginDock = nodeManager.getDockNode("demo/LoginForm.fxml", "Personal info", new ImageView(dockImage));
-    loginDock.setPrefSize(100, 500);
-    loginDock.dock(dockPane, DockPos.LEFT);
 
     // can be created and docked before or after the scene is created
     // and the stage is shown
@@ -150,6 +154,9 @@ public class DockFX extends Application {
     DockPane.initializeDefaultUserAgentStylesheet();
 
     // TODO: after this feel free to apply your own global stylesheet using the StyleManager class
+
+
+
 
   }
 

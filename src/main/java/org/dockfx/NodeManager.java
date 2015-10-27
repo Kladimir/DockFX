@@ -21,14 +21,10 @@
 
 package org.dockfx;
 
-import java.lang.Math;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import org.dockfx.events.DockNodeEvent;
 import org.dockfx.events.DockNodeEventListener;
@@ -39,11 +35,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Window;
 
 /**
@@ -232,6 +223,7 @@ public class NodeManager {
         for (DockNodeEventListenerInterface listener : listeners) {
           listener.dockNodeRestored(e);
         }
+        taskBar.removeTaskBarItemForNode(e.getSource());
       };
 
       @Override
@@ -275,7 +267,7 @@ public class NodeManager {
    * Cascades all nodes
    */
   public void cascadeNodes() {
-    cascadeNodes(dockNodes);
+    cascadeNodes(getTileableNodes());
   }
 
   /**
@@ -323,7 +315,7 @@ public class NodeManager {
   public List<DockNode> getTileableNodes() {
     List<DockNode> tileableNodes = new LinkedList<>();
     for (DockNode dockNode : dockNodes) {
-      if (dockNode.hasParent()) {
+      if (dockNode.hasParent() && !dockNode.isMinimized()) {
         tileableNodes.add(dockNode);
       }
     }

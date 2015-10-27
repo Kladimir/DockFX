@@ -20,6 +20,9 @@
 
 package org.dockfx.taskBar;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.dockfx.DockNode;
 
 import javafx.scene.layout.HBox;
@@ -35,12 +38,15 @@ public class TaskBar extends HBox {
    */
   public static final int TASK_BAR_HEIGHT = 25;
 
+  private Map<DockNode, TaskBarItem> taskBarItems;
+
   /**
    * Creates TaskBar as HBox and sets height.
    */
   public TaskBar() {
     super();
     this.setMaxHeight(TASK_BAR_HEIGHT);
+    taskBarItems = new HashMap<DockNode, TaskBarItem>();
   }
 
   /**
@@ -51,5 +57,11 @@ public class TaskBar extends HBox {
   public void addTaskBarItemForNode(DockNode dockNode) {
     TaskBarItem taskBarItem = new TaskBarItem(dockNode);
     getChildren().add(taskBarItem);
+    taskBarItems.put(dockNode, taskBarItem);
+  }
+
+  public void removeTaskBarItemForNode(DockNode dockNode) {
+    getChildren().remove(taskBarItems.get(dockNode));
+    taskBarItems.remove(dockNode);
   }
 }

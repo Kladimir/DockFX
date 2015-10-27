@@ -346,6 +346,12 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
     }
   }
 
+  public void floatNode(Node node) {
+    DockNodeEventHandler dockNodeEventHandler = new DockNodeEventHandler(node);
+    dockNodeEventFilters.put(node, dockNodeEventHandler);
+    node.addEventFilter(DockEvent.DOCK_OVER, dockNodeEventHandler);
+  }
+
   /**
    * Dock the node into this dock pane at the given docking position relative to the sibling in the
    * layout. This is used to relatively position the dock nodes to other nodes given their preferred
