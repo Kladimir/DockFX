@@ -142,7 +142,7 @@
 
 .dock-title-bar {
   /*-fx-background-color: -fx-background; */
-  -fx-background-color: rgba(148,255,127,1);
+  -fx-background-color: rgba(228,241,255,1);
   /* TOP/RIGHT/BOTTOM/LEFT */
   -fx-padding: 4 4 2 4;
   -fx-spacing: 3;
