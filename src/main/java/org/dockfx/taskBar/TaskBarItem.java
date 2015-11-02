@@ -27,6 +27,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -75,7 +76,10 @@ public class TaskBarItem extends HBox {
 
     label = new Label("Title");
     label.textProperty().bind(dockNode.titleProperty());
-    label.graphicProperty().bind(dockNode.graphicProperty());
+
+    if (dockNode.getGraphic() instanceof ImageView) {
+      label.setGraphic(new ImageView(((ImageView)dockNode.getGraphic()).getImage()));
+    }
 
     button = new Button();
     button.getStyleClass().add("dock-state-button");
