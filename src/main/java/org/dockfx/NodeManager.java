@@ -233,6 +233,20 @@ public class NodeManager {
         }
       }
 
+      @Override
+      public void dockNodeFocused(DockNodeEvent e) {
+        for (DockNodeEventListenerInterface listener : listeners) {
+          listener.dockNodeFocused(e);
+        }
+      }
+
+      @Override
+      public void dockNodeDefocused(DockNodeEvent e) {
+        for (DockNodeEventListenerInterface listener : listeners) {
+          listener.dockNodeDefocused(e);
+        }
+      }
+
     });
   };
 

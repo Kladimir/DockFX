@@ -20,22 +20,27 @@
 
 package org.dockfx;
 
-import org.dockfx.viewControllers.BaseViewController;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.stream.EventFilter;
+import javax.xml.stream.events.XMLEvent;
+
 import org.dockfx.events.DockNodeEvent;
 import org.dockfx.events.DockNodeEventListenerInterface;
+import org.dockfx.viewControllers.BaseViewController;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -44,15 +49,11 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -267,7 +268,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     VBox.setVgrow(contents, Priority.ALWAYS);
 
     this.getStyleClass().add("dock-node");
-
   }
 
   /**
@@ -352,6 +352,20 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     DockNodeEvent e = new DockNodeEvent(this);
     for (DockNodeEventListenerInterface listener : listeners) {
       listener.dockNodeFloated(e);
+    }
+  }
+
+  private void fireFocusedEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeFocused(e);
+    }
+  }
+
+  private void fireDefocusedEvent() {
+    DockNodeEvent e = new DockNodeEvent(this);
+    for (DockNodeEventListenerInterface listener : listeners) {
+      listener.dockNodeDefocused(e);
     }
   }
 
@@ -523,6 +537,17 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     // size
     stage.sizeToScene();
     stage.show();
+
+    stage.focusedProperty().addListener(new ChangeListener<Boolean>() {
+      public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
+          Boolean newValue) {
+        if (newValue) {
+          fireFocusedEvent();
+        } else {
+          fireDefocusedEvent();
+        }
+      }
+    });
 
     fireFloatEvent();
   }

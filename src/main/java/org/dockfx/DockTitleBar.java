@@ -20,7 +20,6 @@
 
 package org.dockfx;
 
-import java.io.Console;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -41,12 +40,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 

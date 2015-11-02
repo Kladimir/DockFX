@@ -33,7 +33,6 @@ import org.dockfx.NodeManager;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
