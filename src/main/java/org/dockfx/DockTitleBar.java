@@ -137,8 +137,6 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
     stateButton.getStyleClass().add("dock-state-button");
     minimizeButton.getStyleClass().add("dock-minimize-button");
     this.getStyleClass().add("dock-title-bar");
-
-    // this.setBackground(new Background(new BackgroundFill(Color.AQUAMARINE, null, null)));
   }
 
   /**

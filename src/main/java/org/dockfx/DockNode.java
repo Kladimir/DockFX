@@ -22,6 +22,7 @@ package org.dockfx;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.xml.stream.EventFilter;
 import javax.xml.stream.events.XMLEvent;
@@ -538,18 +539,48 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     stage.sizeToScene();
     stage.show();
 
+    getDockTitleBar().getStyleClass().add("dock-title-bar-focused");
     stage.focusedProperty().addListener(new ChangeListener<Boolean>() {
       public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
           Boolean newValue) {
         if (newValue) {
           fireFocusedEvent();
+          setCssFocused();
+
         } else {
           fireDefocusedEvent();
+          setCssDefosed();
         }
+        System.out.println("Focus: " + newValue);
       }
     });
+    setCssFocused();
+  }
 
-    fireFloatEvent();
+  private void setCssFocused() {
+    //this removes all occurrences of undesired css class in css classes list
+    getDockTitleBar().getStyleClass().removeIf(new Predicate<String>() {
+
+      public boolean test(String t) {
+        if (t.equals("dock-title-bar-defocused")) {
+          return true;
+        }
+        return false;
+      }});
+    getDockTitleBar().getStyleClass().add("dock-title-bar-focused");
+  }
+
+  private void setCssDefosed() {
+  //this removes all occurrences of undesired css class in css classes list
+    getDockTitleBar().getStyleClass().removeIf(new Predicate<String>() {
+
+      public boolean test(String t) {
+        if (t.equals("dock-title-bar-focused")) {
+          return true;
+        }
+        return false;
+      }});
+    getDockTitleBar().getStyleClass().add("dock-title-bar-defocused");
   }
 
   /**
