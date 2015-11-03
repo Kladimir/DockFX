@@ -301,6 +301,7 @@ public class NodeManager {
             .setHeight(Math.max(dockNode.getPrefHeight(), dockNode.getContents().prefHeight(0)));
         dockNode.getStage().setX(dockPaneWidndow.getX() + i * CASCADE_OFFSET);
         dockNode.getStage().setY(dockPaneWidndow.getY() + i * CASCADE_OFFSET);
+        dockNode.getStage().toFront();
         i++;
       }
     }
