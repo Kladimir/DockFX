@@ -29,11 +29,4 @@ import javafx.fxml.FXML;
  */
 abstract public class BaseViewController {
 
-  /**
-   * Automatically called to initialize a controller after its root element has been completely
-   * processed.
-   */
-  @FXML
-  abstract protected void initialize();
-
 }
