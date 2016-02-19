@@ -50,6 +50,8 @@ public class NodeManager {
 	 */
 	public static final int CASCADE_OFFSET = 40;
 
+	public static int cascadeStartOffset = 0;
+
 	/**
 	 * Holds all nodes, floating or docked.
 	 */
@@ -314,8 +316,8 @@ public class NodeManager {
 				dockNode.setFloating(true);
 				dockNode.getStage().setWidth(Math.max(dockNode.getPrefWidth(), dockNode.getContents().prefWidth(0)));
 				dockNode.getStage().setHeight(Math.max(dockNode.getPrefHeight(), dockNode.getContents().prefHeight(0)));
-				dockNode.getStage().setX(dockPaneWidndow.getX() + i * CASCADE_OFFSET);
-				dockNode.getStage().setY(dockPaneWidndow.getY() + i * CASCADE_OFFSET);
+				dockNode.getStage().setX(cascadeStartOffset + dockPaneWidndow.getX() + i * CASCADE_OFFSET);
+				dockNode.getStage().setY(cascadeStartOffset + dockPaneWidndow.getY() + i * CASCADE_OFFSET);
 				dockNode.getStage().toFront();
 				i++;
 			}
@@ -359,5 +361,13 @@ public class NodeManager {
 	 */
 	public ObservableList<DockNode> getDockNodes() {
 		return dockNodes;
+	}
+
+	public static void setCascadeStartOffset(int cascadeStartOffset) {
+		NodeManager.cascadeStartOffset = cascadeStartOffset;
+	}
+
+	public static int getCascadeStartOffset() {
+		return cascadeStartOffset;
 	}
 }
