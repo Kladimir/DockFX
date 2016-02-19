@@ -25,7 +25,6 @@ import java.util.Stack;
 
 import org.dockfx.events.DockEvent;
 import org.dockfx.taskBar.TaskBar;
-
 import com.sun.javafx.css.StyleManager;
 
 import javafx.animation.KeyFrame;
@@ -44,6 +43,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -294,7 +294,7 @@ public class DockPane extends VBox implements EventHandler<DockEvent> {
 		this.setAlignment(Pos.BOTTOM_CENTER);
 
 		root = new SplitPane();
-		root.getStyleClass().add("border-transparent");
+		VBox.setVgrow(root, Priority.ALWAYS);
 		this.getChildren().add(root);
 
 		taskBar = new TaskBar();
