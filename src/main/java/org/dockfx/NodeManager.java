@@ -29,11 +29,9 @@ import java.util.Set;
 import org.dockfx.events.DockNodeEvent;
 import org.dockfx.events.DockNodeEventListener;
 import org.dockfx.events.DockNodeEventListenerInterface;
-import org.dockfx.taskBar.TaskBar;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.stage.Window;
 
@@ -68,11 +66,6 @@ public class NodeManager {
 	private DockPane dockPane;
 
 	/**
-	 * Invisible bar at bottom of the stage where minimized nodes live
-	 */
-	private TaskBar taskBar;
-
-	/**
 	 * Creates dock manager. Applies key listener for cascading/tiling
 	 * shortcuts. Scene that DockPane will be added to is required for listening
 	 * to key events.
@@ -85,10 +78,6 @@ public class NodeManager {
 	 */
 	public NodeManager(DockPane dockPane) {
 		this.dockPane = dockPane;
-
-		taskBar = new TaskBar();
-		dockPane.setAlignment(Pos.BOTTOM_CENTER);
-		dockPane.getChildren().add(taskBar);
 	}
 
 	/**
@@ -238,7 +227,7 @@ public class NodeManager {
 				for (DockNodeEventListenerInterface listener : listeners) {
 					listener.dockNodeMinimized(e);
 				}
-				taskBar.addTaskBarItemForNode(e.getSource());
+				dockPane.getTaskBar().addTaskBarItemForNode(e.getSource());
 			}
 
 			@Override
@@ -246,7 +235,7 @@ public class NodeManager {
 				for (DockNodeEventListenerInterface listener : listeners) {
 					listener.dockNodeRestored(e);
 				}
-				taskBar.removeTaskBarItemForNode(e.getSource());
+				dockPane.getTaskBar().removeTaskBarItemForNode(e.getSource());
 			};
 
 			@Override

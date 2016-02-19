@@ -113,14 +113,14 @@ public class DockFX extends Application {
     // let's disable our table from being undocked
     // tableDock.setDockTitleBar(null);
     tableDock.setPrefSize(300, 500);
-    tableDock.dock(dockPane, DockPos.BOTTOM);
+    //tableDock.dock(dockPane, DockPos.BOTTOM);
     //tableDock.setFloating(true);
     //tableDock.floatNode(null, dockPane);
 
     // loads interface from fxml file
     DockNode loginDock = nodeManager.getDockNode("demo/LoginForm.fxml", "Personal info", new ImageView(dockImage));
     loginDock.setPrefSize(200, 500);
-    loginDock.dock(dockPane, DockPos.LEFT);
+    //loginDock.dock(dockPane, DockPos.LEFT);
 
     primaryStage.setScene(scene);
     primaryStage.sizeToScene();
@@ -131,10 +131,10 @@ public class DockFX extends Application {
     DockNode treeDock =
         nodeManager.getDockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
     treeDock.setPrefSize(115, 500);
-    treeDock.dock(dockPane, DockPos.LEFT);
+    //treeDock.dock(dockPane, DockPos.LEFT);
     treeDock = nodeManager.getDockNode(generateRandomTree(), "Tree Dock", new ImageView(dockImage));
     treeDock.setPrefSize(115, 500);
-    treeDock.dock(dockPane, DockPos.RIGHT);
+    //treeDock.dock(dockPane, DockPos.RIGHT);
 
     treeDock.setMaximizable(false);
     treeDock.setMinimizable(false);

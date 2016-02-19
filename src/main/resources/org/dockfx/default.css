@@ -103,6 +103,10 @@
   -fx-graphic: url(left.png);
 }
 
+.border-transparent {
+  -fx-box-border: transparent;
+}
+
 /*******************************************************************************
  *                                                                             *
  * DockNode                                                                    *

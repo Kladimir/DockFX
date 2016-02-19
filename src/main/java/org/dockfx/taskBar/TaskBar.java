@@ -25,7 +25,10 @@ import java.util.Map;
 
 import org.dockfx.DockNode;
 
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 
 /**
  * Horizontal bar where TaskBarItems are displayed.
@@ -38,6 +41,8 @@ public class TaskBar extends HBox {
    */
   public static final int TASK_BAR_HEIGHT = 25;
 
+  public static double BACKGROUND_COLOR = 0.9;
+
   private Map<DockNode, TaskBarItem> taskBarItems;
 
   /**
@@ -45,7 +50,8 @@ public class TaskBar extends HBox {
    */
   public TaskBar() {
     super();
-    this.setMaxHeight(TASK_BAR_HEIGHT);
+    this.setMinHeight(TASK_BAR_HEIGHT);
+    this.setBackground(new Background(new BackgroundFill(Color.color(BACKGROUND_COLOR, BACKGROUND_COLOR, BACKGROUND_COLOR), null, null)));
     taskBarItems = new HashMap<DockNode, TaskBarItem>();
   }
 
