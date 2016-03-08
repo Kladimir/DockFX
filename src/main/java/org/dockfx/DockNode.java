@@ -549,8 +549,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
 		if (centerInStage && dockPane != null && dockPane.getScene() != null && getContents() instanceof Region) {
 			Region region = (Region) getContents();
-			System.err.println("Region pref WxH : " + region.getPrefWidth() + " x " + region.getPrefHeight());
-			System.err.println("Region height, minHeight : " + region.getHeight() + ", " + region.getMinHeight());
 
 			double regionHeightDelta = (region.getPrefHeight() / 2);
 			double regionWidthDelta = (region.getPrefWidth() / 2);
