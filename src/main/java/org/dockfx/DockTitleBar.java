@@ -32,6 +32,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -105,12 +106,8 @@ public class DockTitleBar extends HBox implements EventHandler<MouseEvent> {
     });
 
     closeButton = new Button();
-    closeButton.setOnAction(new EventHandler<ActionEvent>() {
-
-      @Override
-      public void handle(ActionEvent event) {
-        dockNode.close();
-      }
+    closeButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
+    	dockNode.close();
     });
     closeButton.visibleProperty().bind(dockNode.closableProperty());
 

@@ -84,7 +84,7 @@ public class NodeManager {
 	}
 
 	public DockNode getDockNode(Node contents, String title, Node graphic, DockFXViewController controller) {
-		DockNode dockNode = new DockNode(contents, title, graphic);
+		DockNode dockNode = new DockNode(contents, title, graphic, controller);
 		handleNodeCreated(dockNode);
 		return dockNode;
 	}
