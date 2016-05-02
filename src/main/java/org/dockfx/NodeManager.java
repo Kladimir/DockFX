@@ -29,6 +29,7 @@ import java.util.Set;
 import org.dockfx.events.DockNodeEvent;
 import org.dockfx.events.DockNodeEventListener;
 import org.dockfx.events.DockNodeEventListenerInterface;
+import org.dockfx.viewControllers.DockFXViewController;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -82,6 +83,12 @@ public class NodeManager {
 		this.dockPane = dockPane;
 	}
 
+	public DockNode getDockNode(Node contents, String title, Node graphic, DockFXViewController controller) {
+		DockNode dockNode = new DockNode(contents, title, graphic);
+		handleNodeCreated(dockNode);
+		return dockNode;
+	}
+
 	/**
 	 * Creates dockNode, dockNode creation documented in documented in
 	 * {@link org.dockfx.DockNode}
@@ -98,9 +105,7 @@ public class NodeManager {
 	 * @return DockNode instance
 	 */
 	public DockNode getDockNode(Node contents, String title, Node graphic) {
-		DockNode dockNode = new DockNode(contents, title, graphic);
-		handleNodeCreated(dockNode);
-		return dockNode;
+		return getDockNode(contents, title, graphic, null);
 	}
 
 	/**

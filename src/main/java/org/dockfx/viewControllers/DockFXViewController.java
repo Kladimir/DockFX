@@ -1,5 +1,5 @@
 /**
- * @file BaseViewController.java
+ * @file DockFXViewController.java
  * @brief Abstract class for View Controllers
  *
  * @section License
@@ -20,13 +20,23 @@
 
 package org.dockfx.viewControllers;
 
-import javafx.fxml.FXML;
+import org.dockfx.DockTitleBar;
 
 /**
  * Abstract base class for View Controllers
  *
  * @since DockFX 0.1
  */
-abstract public class BaseViewController {
+abstract public class DockFXViewController {
+
+	private DockTitleBar dockTitleBar;
+
+	public void setDockTitleBar(DockTitleBar dockTitleBar) {
+		this.dockTitleBar = dockTitleBar;
+	}
+
+	public DockTitleBar getDockTitleBar() {
+		return dockTitleBar;
+	}
 
 }

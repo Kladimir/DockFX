@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 
 import org.dockfx.events.DockNodeEvent;
 import org.dockfx.events.DockNodeEventListenerInterface;
-import org.dockfx.viewControllers.BaseViewController;
+import org.dockfx.viewControllers.DockFXViewController;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -96,7 +96,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 	/**
 	 * View controller of node inside this DockNode
 	 */
-	private BaseViewController viewController;
+	private DockFXViewController viewController;
 
 	/**
 	 * Cursor state that currentCursor is in when not resizing.
@@ -167,6 +167,11 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 		}
 	};
 
+	public DockNode(Node contents, String title, Node graphic, DockFXViewController controller) {
+		initializeDockNode(contents, title, graphic, controller);
+	}
+
+
 	/**
 	 * Creates a default DockNode with a default title bar and layout.
 	 *
@@ -181,7 +186,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 	 *            bidirectional state with the title bar and stage.
 	 */
 	public DockNode(Node contents, String title, Node graphic) {
-		initializeDockNode(contents, title, graphic);
+		this(contents, title, graphic, null);
 	}
 
 	/**
@@ -225,8 +230,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 	 */
 	public DockNode(String FXMLPath, String title, Node graphic) {
 		FXMLLoader loader = loadNode(FXMLPath);
-		initializeDockNode(loader.getRoot(), title, graphic);
-		viewController = loader.getController();
+		initializeDockNode(loader.getRoot(), title, graphic, loader.getController());
 		currentCursor = Cursor.DEFAULT;
 	}
 
@@ -287,12 +291,16 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 	 *            The caption title of this dock node which maintains
 	 *            bidirectional state with the title bar and stage.
 	 */
-	private void initializeDockNode(Node contents, String title, Node graphic) {
+	private void initializeDockNode(Node contents, String title, Node graphic, DockFXViewController controller) {
 		this.titleProperty.setValue(title);
 		this.graphicProperty.setValue(graphic);
 		this.contents = contents;
+		this.viewController = controller;
 
 		dockTitleBar = new DockTitleBar(this);
+		if (viewController != null) {
+			viewController.setDockTitleBar(dockTitleBar);
+		}
 
 		getChildren().addAll(dockTitleBar, contents);
 		VBox.setVgrow(contents, Priority.ALWAYS);
@@ -684,7 +692,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 	 *
 	 * @return ViewController associated with this dock nodes contents
 	 */
-	public final BaseViewController getViewController() {
+	public final DockFXViewController getViewController() {
 		return viewController;
 	}
 
