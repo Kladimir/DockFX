@@ -1,9 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0     http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.dockfx</groupId>
     <artifactId>dockfx</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.0</version>
+    <version>0.3.0-SNAPSHOT</version>
     <name>DockFX</name>
     <url>https://github.com/RobertBColton/DockFX.git</url>
 
@@ -29,7 +29,7 @@
     <scm>
       <connection>scm:git:https://git@github.com:Kladimir/DockFX.git</connection>
       <developerConnection>scm:git:https://git@github.com:Kladimir/DockFX.git</developerConnection>
-      <tag>dockFX-0.2.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <build>
