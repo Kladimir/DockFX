@@ -558,8 +558,8 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 		if (centerInStage && dockPane != null && dockPane.getScene() != null && getContents() instanceof Region) {
 			Region region = (Region) getContents();
 
-			double regionHeightDelta = (region.getPrefHeight() / 2);
-			double regionWidthDelta = (region.getPrefWidth() / 2);
+			double regionHeightDelta = (region.prefHeight(-1) / 2);
+			double regionWidthDelta = (region.prefWidth(-1) / 2);
 
 			//if pref width or height equals -1 we use
 			//completely arbitrary values, might be changed in the future
