@@ -19,6 +19,10 @@
         <fileExtensions>java, properties, xml</fileExtensions>
     </properties>
 
+    <scm>
+        <connection>scm:git:file:///${basedir}</connection>
+    </scm>
+
     <build>
         <plugins>
 
