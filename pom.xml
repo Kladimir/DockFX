@@ -3,7 +3,7 @@
     <groupId>org.dockfx</groupId>
     <artifactId>dockfx</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.1</version>
+    <version>0.2.2-SNAPSHOT</version>
     <name>DockFX</name>
     <url>https://github.com/RobertBColton/DockFX.git</url>
 
@@ -21,7 +21,7 @@
 
     <scm>
         <connection>scm:git:file:///${basedir}</connection>
-      <tag>dockfx-0.2.1</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <build>
